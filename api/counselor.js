@@ -5,8 +5,14 @@ export default async function handler(req, res) {
   }
 
   const { text, emotion } = req.body;
-  const API_KEY = process.env.GEMINI_API_KEY; // 서버 환경변수에서 가져옴
-  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
+  const API_KEY = process.env.GEMINI_API_KEY;
+
+  if (!API_KEY) {
+    return res.status(500).json({ error: 'API Key가 설정되지 않았습니다. Vercel 환경변수를 확인해주세요.' });
+  }
+
+  // 가장 안정적인 1.5-flash 모델로 우선 테스트 (작동 확인 후 2.0으로 변경 가능)
+  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
 
   const prompt = `
 당신은 고등학생 전문 상담사입니다. 다음은 학생이 쓴 일기 내용과 그 당시의 감정입니다.
@@ -30,8 +36,15 @@ export default async function handler(req, res) {
     });
 
     const data = await response.json();
+
+    if (data.error) {
+      console.error('Gemini API Error:', data.error);
+      return res.status(response.status).json({ error: data.error.message });
+    }
+
     res.status(200).json(data);
   } catch (error) {
-    res.status(500).json({ error: 'AI 연결 중 오류가 발생했습니다.' });
+    console.error('Fetch Error:', error);
+    res.status(500).json({ error: '서버 연결 중 오류가 발생했습니다.' });
   }
 }
