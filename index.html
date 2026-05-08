@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>오늘 하루는 어땠나요? — 감정 일기</title>
+  <meta name="description" content="고등학생을 위한 AI 감정 일기 — 오늘 하루를 기록하고 AI 상담사와 대화해 보세요." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Gowun+Dodum&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- 배경 파티클 -->
+  <div class="bg-particles" id="bgParticles"></div>
+
+  <!-- 메인 래퍼 -->
+  <div class="app-wrapper">
+
+    <!-- 헤더 영역 -->
+    <header class="app-header">
+      <div class="header-date" id="headerDate"></div>
+      <h1 class="app-title">오늘 하루는 어땠나요?</h1>
+      <p class="app-subtitle">당신의 감정을 솔직하게 적어보세요 ✨</p>
+    </header>
+
+    <!-- 감정 이모지 선택 -->
+    <section class="emotion-picker" aria-label="감정 선택">
+      <p class="section-label">지금 기분이 어때요?</p>
+      <div class="emoji-row" role="radiogroup" aria-label="감정 이모지">
+        <button class="emoji-btn" id="emoji-very-bad"  data-emotion="매우 힘들어요" aria-label="매우 힘들어요" title="매우 힘들어요">😢</button>
+        <button class="emoji-btn" id="emoji-bad"       data-emotion="힘들어요"    aria-label="힘들어요"    title="힘들어요">😔</button>
+        <button class="emoji-btn" id="emoji-neutral"   data-emotion="그럭저럭이에요" aria-label="그럭저럭이에요" title="그럭저럭이에요">😐</button>
+        <button class="emoji-btn" id="emoji-good"      data-emotion="좋아요"      aria-label="좋아요"      title="좋아요">🙂</button>
+        <button class="emoji-btn" id="emoji-very-good" data-emotion="정말 좋아요" aria-label="정말 좋아요"  title="정말 좋아요">😄</button>
+      </div>
+      <div class="emotion-label-display" id="emotionLabelDisplay">감정을 선택해 주세요</div>
+    </section>
+
+    <!-- 일기 입력 영역 -->
+    <section class="diary-section" aria-label="일기 입력">
+      <div class="diary-card">
+        <div class="diary-card-header">
+          <span class="diary-card-icon">📝</span>
+          <span class="diary-card-title">오늘의 일기</span>
+          <span class="char-counter" id="charCounter">0 / 1000</span>
+        </div>
+        <textarea
+          id="diaryInput"
+          class="diary-textarea"
+          placeholder="오늘 있었던 일, 느꼈던 감정, 떠오르는 생각들을 자유롭게 써보세요.
+어떤 말도 괜찮아요. 여기서는 당신의 이야기가 제일 소중해요 💙"
+          maxlength="1000"
+          aria-label="감정 일기 입력창"
+        ></textarea>
+
+        <!-- 액션 버튼 행 -->
+        <div class="action-row">
+          <!-- 음성 입력 버튼 -->
+          <button class="btn-voice" id="btnVoice" aria-label="음성으로 입력하기" title="음성 입력">
+            <span class="btn-icon" id="micIcon">🎙️</span>
+            <span class="btn-text" id="voiceBtnText">음성 입력</span>
+            <span class="voice-pulse" id="voicePulse"></span>
+          </button>
+
+          <!-- AI 상담사 버튼 -->
+          <button class="btn-ai" id="btnAI" aria-label="AI 상담사에게 물어보기">
+            <span class="btn-icon">🤖</span>
+            <span class="btn-text">AI 상담사</span>
+          </button>
+
+          <!-- 저장 버튼 -->
+          <button class="btn-save" id="btnSave" aria-label="일기 저장하기">
+            <span class="btn-icon">💾</span>
+            <span class="btn-text">저장</span>
+          </button>
+        </div>
+
+        <!-- 음성 인식 상태 표시 -->
+        <div class="voice-status" id="voiceStatus" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- AI 상담사 응답 영역 -->
+    <section class="ai-section" id="aiSection" aria-label="AI 상담사 답변" aria-live="polite">
+      <div class="ai-card" id="aiCard">
+        <div class="ai-card-header">
+          <div class="ai-avatar">
+            <span class="ai-avatar-emoji">🤖</span>
+            <span class="ai-online-dot"></span>
+          </div>
+          <div class="ai-info">
+            <span class="ai-name">마음이 상담사</span>
+            <span class="ai-status" id="aiStatus">언제든지 이야기해요</span>
+          </div>
+        </div>
+        <div class="ai-response-body" id="aiResponseBody">
+          <div class="ai-placeholder">
+            <p>📬 AI 상담사 버튼을 누르면</p>
+            <p>당신의 일기를 읽고 따뜻한 답변을 드릴게요.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 푸터 -->
+    <footer class="app-footer">
+      <p>💙 당신의 감정은 소중해요 · 혼자 힘들 땐 언제든 도움을 요청하세요</p>
+      <p class="crisis-line">위기상담 ☎ <strong>1393</strong> &nbsp;|&nbsp; 청소년 상담 ☎ <strong>1388</strong></p>
+    </footer>
+
+  </div><!-- /.app-wrapper -->
+
+  <!-- 저장 완료 토스트 -->
+  <div class="toast" id="saveToast" role="alert" aria-live="assertive">
+    <span class="toast-icon">✅</span>
+    <span class="toast-msg">일기가 저장됐어요!</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
