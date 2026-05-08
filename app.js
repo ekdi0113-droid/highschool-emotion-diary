@@ -199,53 +199,36 @@ function setVoiceUI(listening) {
   }
 }
 
-// ── 6. Gemini API 상담사 연동 ───────────────────────
-const GEMINI_API_KEY = 'AIzaSyCTIJ3Ij0TJc_gpMAw3hNJFiurAKawMQ7E';
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-
+// ── 6. AI 상담사 연동 (보안 강화: Serverless Proxy 사용) ───────────────────────
 async function getGeminiResponse(text, emotion) {
-  const prompt = `
-당신은 고등학생 전문 상담사입니다. 다음은 학생이 쓴 일기 내용과 그 당시의 감정입니다.
-
-[학생의 감정 선택]: ${emotion || '미선택'}
-[일기 내용]: ${text}
-
-위 내용을 읽고 다음 규칙에 따라 답변해 주세요:
-1. 첫 줄에는 학생의 일기를 요약하는 감정 단어 하나를 해시태그 형식으로 적어주세요 (예: #뿌듯함, #속상함).
-2. 그 다음 줄부터는 학생의 이야기에 깊이 공감하며 따뜻한 위로와 격려를 담은 메시지를 '2~3문장'으로 작성해 주세요.
-3. 말투는 친절하고 다정한 '해요체'를 사용해 주세요.
-`;
-
   try {
-    const response = await fetch(GEMINI_API_URL, {
+    const response = await fetch('/api/counselor', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }]
-      })
+      body: JSON.stringify({ text, emotion })
     });
 
     const data = await response.json();
     if (data.candidates && data.candidates[0].content.parts[0].text) {
       const fullText = data.candidates[0].content.parts[0].text.trim();
       
-      // 첫 번째 줄(해시태그)과 나머지 메시지 분리
       const lines = fullText.split('\n').filter(line => line.trim() !== '');
       const tag = lines[0].startsWith('#') ? lines[0] : '#감정기록';
       const message = lines.slice(1).join('\n');
       
       return { response: message, tags: [tag] };
     } else {
-      throw new Error('API 응답 형식이 올바르지 않습니다.');
+      throw new Error('응답 데이터가 없습니다.');
     }
   } catch (error) {
-    console.error('Gemini API Error:', error);
+    console.error('API Error:', error);
     return { 
-      response: '미안해요, 지금 마음이 상담사에게 잠깐 연결 문제가 생겼어요. 잠시 후에 다시 이야기해 줄 수 있을까요? 당신의 이야기는 언제든 들을 준비가 되어 있어요.', 
+      response: '미안해요, 지금 마음이 상담사에게 잠깐 연결 문제가 생겼어요. 잠시 후에 다시 시도해 주세요.', 
       tags: ['#연결오류'] 
     };
   }
 }
+
 
 btnAI.addEventListener('click', async () => {
   const text = diaryInput.value.trim();
