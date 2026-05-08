@@ -11,8 +11,8 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'API Key가 설정되지 않았습니다. Vercel 환경변수를 확인해주세요.' });
   }
 
-  // 가장 안정적인 1.5-flash 모델로 우선 테스트 (작동 확인 후 2.0으로 변경 가능)
-  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+  // 사용자가 요청한 최신 2.5-flash 모델 적용 시도
+  const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
 
   const prompt = `
 당신은 고등학생 전문 상담사입니다. 다음은 학생이 쓴 일기 내용과 그 당시의 감정입니다.
